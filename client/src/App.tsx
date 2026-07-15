@@ -8,7 +8,7 @@ function App() {
     <div className={styles.container}>
       <h1>TaskBoard</h1>
       <a>Count: {count}</a>
-      <Button onClick={() => setCount(count+1)}>click</Button>
+      <Button onClick={() => setCount(count + 1)}>click</Button>
     </div>
   );
 }
