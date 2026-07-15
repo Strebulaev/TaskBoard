@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "server": "tsx src/index.ts",
+    "build": "tsc"
+  }
+}
