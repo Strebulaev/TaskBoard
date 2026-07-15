@@ -8,46 +8,23 @@ import Projects from '@pages/Projects/Projects';
 import ProjectPage from '@pages/Projects/ProjectPage';
 import TaskPage from '@pages/Tasks/TaskPage';
 import ProfilePage from '@pages/Profile/ProfilePage';
+import { RootLayout } from '@layouts/RootLayout';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Landing />,
-  },
-  {
-    path: '/login',
-    element: <Login />,
-  },
-  {
-    path: '/registration',
-    element: <Registration />,
-  },
-  {
-    path: '/dashboard',
-    element: <Dashboard />,
-  },
-  {
-    path: '/tasks-list',
-    element: <TasksList />,
-  },
-  {
-    path: '/projects',
-    element: <Projects />,
-  },
-  {
-    path: '/project-:id',
-    element: <ProjectPage />,
-  },
-  {
-    path: '/task-:id',
-    element: <TaskPage />,
-  },
-  {
-    path: '/profile-:id',
-    element: <ProfilePage />,
-  },
-  {
-    path: '*',
-    element: <h1>404. Page Not Found</h1>,
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <Landing /> },
+      { path: 'login', element: <Login /> },
+      { path: 'registration', element: <Registration /> },
+      { path: 'dashboard', element: <Dashboard /> },
+      { path: 'tasks-list', element: <TasksList /> },
+      { path: 'projects', element: <Projects /> },
+      { path: 'project-:id', element: <ProjectPage /> },
+      { path: 'task-:id', element: <TaskPage /> },
+      { path: 'profile-:id', element: <ProfilePage /> },
+      { path: '*', element: <h1>404. Page Not Found</h1> },
+    ],
   },
 ]);
