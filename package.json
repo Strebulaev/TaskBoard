@@ -29,7 +29,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
