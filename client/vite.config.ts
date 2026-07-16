@@ -24,4 +24,13 @@ export default defineConfig({
       '@theme': path.resolve(__dirname, './src/theme'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        cookieDomainRewrite: 'localhost',
+      },
+    },
+  },
 });

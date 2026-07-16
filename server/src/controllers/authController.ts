@@ -128,3 +128,21 @@ export const refresh = async (req: Request, res: Response) => {
 
   res.json({ message: 'Token refreshed' });
 };
+
+export const getMe = async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, name: true, email: true, avatarUrl: true },
+  });
+
+  if (!user) {
+    return res.status(401).json({ error: 'User not found' });
+  }
+
+  res.json({ user });
+};
