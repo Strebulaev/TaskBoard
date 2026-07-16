@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -17,6 +17,7 @@ import { useUser } from '@hooks/useUser';
 import { logout } from '@api/auth';
 
 export function RootLayout() {
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useThemeStore();
   const { user, isLoading } = useUser();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -32,6 +33,7 @@ export function RootLayout() {
   const handleLogout = async () => {
     await logout();
     handleMenuClose();
+    navigate('/');
   };
 
   return (
@@ -44,15 +46,19 @@ export function RootLayout() {
             </Link>
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Link to="/dashboard" style={{ color: 'inherit', textDecoration: 'none' }}>
-              Dashboard
-            </Link>
-            <Link to="/tasks-list" style={{ color: 'inherit', textDecoration: 'none' }}>
-              Tasks
-            </Link>
-            <Link to="/projects" style={{ color: 'inherit', textDecoration: 'none' }}>
-              Projects
-            </Link>
+            {user && (
+              <>
+                <Link to="/dashboard" style={{ color: 'inherit', textDecoration: 'none' }}>
+                  Dashboard
+                </Link>
+                <Link to="/tasks-list" style={{ color: 'inherit', textDecoration: 'none' }}>
+                  Tasks
+                </Link>
+                <Link to="/projects" style={{ color: 'inherit', textDecoration: 'none' }}>
+                  Projects
+                </Link>
+              </>
+            )}
             <IconButton color="inherit" onClick={toggleTheme}>
               {theme === 'light' ? <Brightness4 /> : <Brightness7 />}
             </IconButton>
@@ -60,6 +66,7 @@ export function RootLayout() {
               <Typography variant="body2">Loading...</Typography>
             ) : user ? (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2">{user.name}</Typography>
                 <Avatar
                   src={user.avatarUrl}
                   alt={user.name}
