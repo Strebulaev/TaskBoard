@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import { RootLayout } from '@layouts/RootLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PublicRoute } from './PublicRoute';
-import Landing from '@pages/Landing/Landing';
 import Login from '@pages/Login/Login';
 import Registration from '@pages/Registration/Registration';
 import Dashboard from '@pages/Dashboard/Dashboard';
@@ -11,13 +10,14 @@ import Projects from '@pages/Projects/Projects';
 import ProjectPage from '@pages/Projects/ProjectPage';
 import TaskPage from '@pages/Tasks/TaskPage';
 import ProfilePage from '@pages/Profile/ProfilePage';
+import App from '../App';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
     children: [
-      { index: true, element: <Landing /> },
+      { index: true, element: <App /> },
       {
         element: <PublicRoute />,
         children: [
@@ -31,9 +31,9 @@ export const router = createBrowserRouter([
           { path: 'dashboard', element: <Dashboard /> },
           { path: 'tasks-list', element: <TasksList /> },
           { path: 'projects', element: <Projects /> },
-          { path: 'project-:id', element: <ProjectPage /> },
-          { path: 'task-:id', element: <TaskPage /> },
-          { path: 'profile-:id', element: <ProfilePage /> },
+          { path: 'project/:id', element: <ProjectPage /> },
+          { path: 'task/:id', element: <TaskPage /> },
+          { path: 'profile/:id', element: <ProfilePage /> },
         ],
       },
       { path: '*', element: <h1>404. Page Not Found</h1> },

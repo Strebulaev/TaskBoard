@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -18,9 +18,16 @@ import { logout } from '@api/auth';
 
 export function RootLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme, toggleTheme } = useThemeStore();
   const { user, isLoading } = useUser();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  React.useEffect(() => {
+    if (user && location.pathname !== '/login' && location.pathname !== '/registration') {
+      localStorage.setItem('lastRoute', location.pathname);
+    }
+  }, [location, user]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -76,7 +83,7 @@ export function RootLayout() {
                   {user.name[0]}
                 </Avatar>
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                  <MenuItem component={Link} to={`/profile-${user.id}`}>
+                  <MenuItem component={Link} to={`/profile/${user.id}`}>
                     Profile
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>

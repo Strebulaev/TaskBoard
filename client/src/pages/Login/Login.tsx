@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, Alert } from '@mui/material';
 import { useUserStore } from '@store/userStore';
 
 export default function Login() {
   const { setUser } = useUserStore();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,6 +26,7 @@ export default function Login() {
       }
       const data = await response.json();
       setUser(data.user);
+      navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     }

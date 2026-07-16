@@ -55,15 +55,15 @@ export function useUpdateProject() {
   });
 }
 
-export function useDeleteProject() {
+export const useDeleteProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: projectsApi.delete,
+    mutationFn: (id: string) => projectsApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: projectKeys.list() });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
   });
-}
+};
 
 export function useAddProjectMember() {
   const queryClient = useQueryClient();

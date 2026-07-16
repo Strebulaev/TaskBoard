@@ -9,6 +9,10 @@ export function PublicRoute() {
   }
 
   if (user) {
+    const lastRoute = localStorage.getItem('lastRoute');
+    if (lastRoute && lastRoute !== '/login' && lastRoute !== '/registration') {
+      return <Navigate to={lastRoute} replace />;
+    }
     return <Navigate to="/dashboard" replace />;
   }
 

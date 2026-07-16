@@ -58,16 +58,15 @@ export function useUpdateTask() {
   });
 }
 
-export function useDeleteTask() {
+export const useDeleteTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: tasksApi.delete,
+    mutationFn: (id: string) => tasksApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taskKeys.my() });
-      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
-}
+};
 
 export function useUpdateTaskStatus() {
   const queryClient = useQueryClient();

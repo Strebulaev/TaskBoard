@@ -1,15 +1,26 @@
-import { useState } from 'react';
-import Button from '@mui/material/Button';
-import styles from './App.module.scss';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '@hooks/useUser';
 
 function App() {
-  const [count, setCount] = useState(0);
-  return (
-    <div className={styles.container}>
-      <h1>TaskBoard</h1>
-      <a>Count: {count}</a>
-      <Button onClick={() => setCount(count + 1)}>click</Button>
-    </div>
-  );
+  const { user, isLoading } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (user) {
+        navigate('/dashboard');
+      } else {
+        navigate('/login');
+      }
+    }
+  }, [user, isLoading, navigate]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return null;
 }
+
 export default App;

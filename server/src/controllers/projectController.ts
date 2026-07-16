@@ -37,7 +37,7 @@ export const projectController = {
     const userId = req.userId!;
 
     const project = await projectService.updateProject(
-      id as string, // ✅ Приведение к строке
+      id as string,
       { title, description, repoLink },
       userId
     );
@@ -57,12 +57,7 @@ export const projectController = {
     const { userId, role } = req.body;
     const currentUserId = req.userId!;
 
-    const member = await projectService.addMember(
-      id as string, // ✅ Приведение к строке
-      userId,
-      role,
-      currentUserId
-    );
+    const member = await projectService.addMember(id as string, userId, role, currentUserId);
     res.status(201).json(member);
   },
 
