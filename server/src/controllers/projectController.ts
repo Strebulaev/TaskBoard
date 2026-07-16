@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { projectService } from '../services/projectService.js';
+import { projectService } from '../services/projectService';
 
 export const projectController = {
   async create(req: Request, res: Response) {
@@ -70,11 +70,7 @@ export const projectController = {
     const { id, userId } = req.params;
     const currentUserId = req.userId!;
 
-    await projectService.removeMember(
-      id as string,
-      userId as string,
-      currentUserId
-    );
+    await projectService.removeMember(id as string, userId as string, currentUserId);
     res.status(204).send();
   },
 
