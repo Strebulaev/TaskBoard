@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  avatarUrl     String?
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions      Session[]
+  projects      Project[]  @relation("ProjectCreator")
+  tasksCreated  Task[]     @relation("TaskCreator")
+  tasksAssigned Task[]     @relation("TaskAssignee")
+  tasksReviewed Task[]     @relation("TaskReviewer")
+  memberships   ProjectMember[]
+}
+
+model Session {
+  id          String   @id @default(uuid())
+  userId      String
+  refreshToken String  @unique
+  expiresAt   DateTime
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  repoLink    String?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator     User     @relation("ProjectCreator", fields: [createdBy], references: [id])
+  tasks       Task[]
+  members     ProjectMember[]
+
+  @@index([createdBy])
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  status      Status    @default(todo)
+  deadline    DateTime?
+  projectId   String
+  createdBy   String
+  assigneeId  String?
+  reviewerId  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  creator     User      @relation("TaskCreator", fields: [createdBy], references: [id])
+  assignee    User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  reviewer    User?     @relation("TaskReviewer", fields: [reviewerId], references: [id])
+
+  @@index([projectId])
+  @@index([createdBy])
+  @@index([assigneeId])
+  @@index([reviewerId])
+}
+
+model ProjectMember {
+  projectId   String
+  userId      String
+  role        Role      @default(member)
+
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, userId])
+  @@index([userId])
+}
+
+enum Status {
+  todo
+  in_progress
+  review
+  done
+}
+
+enum Role {
+  owner
+  admin
+  member
+}
