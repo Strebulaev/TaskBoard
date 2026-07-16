@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectsApi } from '@api/projects';
+import type { Project } from '@/types/project';
 
 export const projectKeys = {
   all: ['projects'] as const,
@@ -11,14 +12,14 @@ export const projectKeys = {
 };
 
 export function useProjects() {
-  return useQuery({
+  return useQuery<Project[]>({
     queryKey: projectKeys.list(),
     queryFn: projectsApi.getAll,
   });
 }
 
 export function useProject(id: string) {
-  return useQuery({
+  return useQuery<Project>({
     queryKey: projectKeys.detail(id),
     queryFn: () => projectsApi.getById(id),
     enabled: !!id,
@@ -26,7 +27,7 @@ export function useProject(id: string) {
 }
 
 export function useProjectMembers(projectId: string) {
-  return useQuery({
+  return useQuery<Project['members']>({
     queryKey: projectKeys.members(projectId),
     queryFn: () => projectsApi.getMembers(projectId),
     enabled: !!projectId,
@@ -55,15 +56,15 @@ export function useUpdateProject() {
   });
 }
 
-export const useDeleteProject = () => {
+export function useDeleteProject() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => projectsApi.delete(id),
+    mutationFn: projectsApi.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: projectKeys.list() });
     },
   });
-};
+}
 
 export function useAddProjectMember() {
   const queryClient = useQueryClient();
@@ -79,6 +80,7 @@ export function useAddProjectMember() {
     }) => projectsApi.addMember(projectId, userId, role),
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: projectKeys.members(projectId) });
+      queryClient.invalidateQueries({ queryKey: projectKeys.detail(projectId) });
     },
   });
 }
@@ -90,6 +92,7 @@ export function useRemoveProjectMember() {
       projectsApi.removeMember(projectId, userId),
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: projectKeys.members(projectId) });
+      queryClient.invalidateQueries({ queryKey: projectKeys.detail(projectId) });
     },
   });
 }
@@ -108,6 +111,7 @@ export function useUpdateProjectMemberRole() {
     }) => projectsApi.updateMemberRole(projectId, userId, role),
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: projectKeys.members(projectId) });
+      queryClient.invalidateQueries({ queryKey: projectKeys.detail(projectId) });
     },
   });
 }
