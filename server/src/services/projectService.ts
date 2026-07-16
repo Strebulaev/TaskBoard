@@ -1,4 +1,4 @@
-import { projectRepository } from '../repositories/projectRepository.js';
+import { projectRepository } from '../repositories/projectRepository';
 
 export const projectService = {
   async createProject(data: {
