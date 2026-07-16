@@ -5,10 +5,6 @@ export const apiClient = {
     const response = await fetch(`${API_BASE}${url}`, {
       credentials: 'include',
     });
-    if (response.status === 401) {
-      window.location.href = '/login';
-      throw new Error('Unauthorized');
-    }
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return response.json();
   },
