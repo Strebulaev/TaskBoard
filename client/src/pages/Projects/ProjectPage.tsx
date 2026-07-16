@@ -23,35 +23,8 @@ import { LoadingSpinner } from '@components/common/LoadingSpinner';
 import { StatusChip } from '@components/common/StatusChip';
 import { TaskForm } from '@components/TaskForm';
 import { useState } from 'react';
-
-interface Member {
-  userId: string;
-  role: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
-
-interface Task {
-  id: string;
-  title: string;
-  status: string;
-  deadline?: string;
-  assignee?: {
-    name: string;
-  };
-}
-
-interface Project {
-  id: string;
-  title: string;
-  description?: string;
-  repoLink?: string;
-  members: Member[];
-  tasks: Task[];
-}
+import type { Task } from '@/types/task';
+import type { Project } from '@/types/project';
 
 export default function ProjectPage() {
   const { id } = useParams();
@@ -61,25 +34,26 @@ export default function ProjectPage() {
   const [editDescription, setEditDescription] = useState('');
   const [editRepoLink, setEditRepoLink] = useState('');
 
-  const { data: project, isLoading, refetch } = useProject(id!);
+  const { data: projectData, isLoading, refetch } = useProject(id!);
   const updateProject = useUpdateProject();
 
   if (isLoading) return <LoadingSpinner />;
-  if (!project) return <Typography>Project not found</Typography>;
+  if (!projectData) return <Typography>Project not found</Typography>;
 
-  const typedProject = project as Project;
-  const owner = typedProject.members?.find((m: Member) => m.role === 'owner');
+  const project = projectData as unknown as Project;
+
+  const owner = project.members?.find((m) => m.role === 'owner');
 
   const handleEditOpen = () => {
-    setEditTitle(typedProject.title);
-    setEditDescription(typedProject.description || '');
-    setEditRepoLink(typedProject.repoLink || '');
+    setEditTitle(project.title);
+    setEditDescription(project.description || '');
+    setEditRepoLink(project.repoLink || '');
     setEditModalOpen(true);
   };
 
   const handleEditSave = async () => {
     await updateProject.mutateAsync({
-      id: typedProject.id,
+      id: project.id,
       data: {
         title: editTitle,
         description: editDescription,
@@ -94,33 +68,33 @@ export default function ProjectPage() {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h4">{typedProject.title}</Typography>
+          <Typography variant="h4">{project.title}</Typography>
           <IconButton onClick={handleEditOpen}>
             <EditIcon />
           </IconButton>
         </Box>
         <Typography variant="body1" color="text.secondary">
-          {typedProject.description || 'No description'}
+          {project.description || 'No description'}
         </Typography>
-        {typedProject.repoLink && (
+        {project.repoLink && (
           <Typography variant="body2">
             Repo:{' '}
-            <a href={typedProject.repoLink} target="_blank" rel="noopener noreferrer">
-              {typedProject.repoLink}
+            <a href={project.repoLink} target="_blank" rel="noopener noreferrer">
+              {project.repoLink}
             </a>
           </Typography>
         )}
         <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <Chip label={`Owner: ${owner?.user?.name || 'Unknown'}`} color="primary" />
-          <Chip label={`${typedProject.members?.length || 0} members`} />
-          <Chip label={`${typedProject.tasks?.length || 0} tasks`} />
+          <Chip label={`${project.members?.length || 0} members`} />
+          <Chip label={`${project.tasks?.length || 0} tasks`} />
         </Box>
       </Box>
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6">Members</Typography>
         <List>
-          {typedProject.members?.map((member: Member) => (
+          {project.members?.map((member) => (
             <ListItem key={member.userId}>
               <ListItemAvatar>
                 <Avatar>{member.user.name[0]}</Avatar>
@@ -162,11 +136,11 @@ export default function ProjectPage() {
             New Task
           </Button>
         </Box>
-        {typedProject.tasks?.length === 0 ? (
+        {!project.tasks || project.tasks.length === 0 ? (
           <Typography color="text.secondary">No tasks yet</Typography>
         ) : (
           <List>
-            {typedProject.tasks?.map((task: Task) => (
+            {project.tasks.map((task: Task) => (
               <ListItem
                 key={task.id}
                 component={Link}

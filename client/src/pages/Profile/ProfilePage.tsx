@@ -85,9 +85,7 @@ export default function ProfilePage() {
   const handleDeleteAvatar = async () => {
     if (userId && window.confirm('Delete avatar?')) {
       const updatedUser = await deleteAvatar.mutateAsync(userId);
-      // Обновляем стор
       updateUser({ avatarUrl: undefined });
-      // Обновляем React Query кеш
       queryClient.setQueryData(['users', userId], updatedUser);
     }
   };
