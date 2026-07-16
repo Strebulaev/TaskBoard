@@ -24,7 +24,7 @@ export const projectController = {
 
   async getById(req: Request, res: Response) {
     const { id } = req.params;
-    const project = await projectService.getProjectById(id as string); // ✅ Приведение к строке
+    const project = await projectService.getProjectById(id as string);
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
@@ -48,7 +48,7 @@ export const projectController = {
     const { id } = req.params;
     const userId = req.userId!;
 
-    await projectService.deleteProject(id as string, userId); // ✅ Приведение к строке
+    await projectService.deleteProject(id as string, userId);
     res.status(204).send();
   },
 
@@ -71,8 +71,8 @@ export const projectController = {
     const currentUserId = req.userId!;
 
     await projectService.removeMember(
-      id as string, // ✅ Приведение к строке
-      userId as string, // ✅ Приведение к строке
+      id as string,
+      userId as string,
       currentUserId
     );
     res.status(204).send();
@@ -84,8 +84,8 @@ export const projectController = {
     const currentUserId = req.userId!;
 
     const member = await projectService.updateMemberRole(
-      id as string, // ✅ Приведение к строке
-      userId as string, // ✅ Приведение к строке
+      id as string,
+      userId as string,
       role,
       currentUserId
     );
@@ -94,7 +94,7 @@ export const projectController = {
 
   async getMembers(req: Request, res: Response) {
     const { id } = req.params;
-    const members = await projectService.getProjectMembers(id as string); // ✅ Приведение к строке
+    const members = await projectService.getProjectMembers(id as string);
     res.json(members);
   },
 };
