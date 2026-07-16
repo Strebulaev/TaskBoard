@@ -26,12 +26,12 @@ model User {
 }
 
 model Session {
-  id          String   @id @default(uuid())
-  userId      String
-  refreshToken String  @unique
-  expiresAt   DateTime
+  id            String   @id @default(uuid())
+  userId        String
+  refreshToken  String   @unique @db.VarChar(500)
+  expiresAt     DateTime
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
