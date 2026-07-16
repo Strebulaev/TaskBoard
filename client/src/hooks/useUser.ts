@@ -1,12 +1,15 @@
-import { useUserStore } from '@store/userStore';
 import { useEffect } from 'react';
+import { useUserStore } from '@store/userStore';
 
 export function useUser() {
-  const { user, isLoading, error, fetchUser, clearUser } = useUserStore();
+  const { user, isLoading, error, fetchUser } = useUserStore();
 
   useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    const hasToken = document.cookie.includes('accessToken');
+    if (hasToken && !user && !isLoading) {
+      fetchUser();
+    }
+  }, [user, isLoading, fetchUser]);
 
-  return { user, isLoading, error, clearUser, refetch: fetchUser };
+  return { user, isLoading, error };
 }
