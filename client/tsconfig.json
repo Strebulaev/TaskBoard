@@ -32,7 +32,8 @@
       "@layouts/*": ["src/layouts/*"],
       "@routes/*": ["src/routes/*"],
       "@styles/*": ["src/styles/*"],
-      "@theme/*": ["src/theme/*"]
+      "@theme/*": ["src/theme/*"],
+      "@providers/*": ["src/providers/*"]
     }
   },
   "include": ["src"]
