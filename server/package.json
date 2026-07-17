@@ -2,7 +2,11 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "server": "tsx src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:docker": "TEST_API_URL=http://app:3000/api vitest run",
+    "test:docker:watch": "TEST_API_URL=http://app:3000/api vitest"
   },
   "devDependencies": {
     "@prisma/client": "^6.0.0",
@@ -11,7 +15,9 @@
     "@types/cors": "^2.8.19",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.2.0",
-    "prisma": "^6.0.0"
+    "@vitest/ui": "^4.1.10",
+    "prisma": "^6.0.0",
+    "vitest": "^4.1.10"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

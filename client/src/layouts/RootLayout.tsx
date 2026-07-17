@@ -69,11 +69,13 @@ export function RootLayout() {
             <IconButton color="inherit" onClick={toggleTheme}>
               {theme === 'light' ? <Brightness4 /> : <Brightness7 />}
             </IconButton>
+
             {isLoading ? (
               <Typography variant="body2">Loading...</Typography>
             ) : user ? (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2">{user.name}</Typography>
+
                 <Avatar
                   src={user.avatarUrl}
                   alt={user.name}
@@ -82,10 +84,12 @@ export function RootLayout() {
                 >
                   {user.name[0]}
                 </Avatar>
+
                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
                   <MenuItem component={Link} to={`/profile/${user.id}`}>
                     Profile
                   </MenuItem>
+
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </Menu>
               </Box>
@@ -97,6 +101,7 @@ export function RootLayout() {
           </Box>
         </Toolbar>
       </AppBar>
+
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Outlet />
       </Box>
