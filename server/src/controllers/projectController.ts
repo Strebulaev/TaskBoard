@@ -6,6 +6,10 @@ export const projectController = {
     const { title, description, repoLink } = req.body;
     const userId = req.userId!;
 
+    if (!title || title.trim() === '') {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+
     const project = await projectService.createProject({
       title,
       description,
@@ -36,20 +40,28 @@ export const projectController = {
     const { title, description, repoLink } = req.body;
     const userId = req.userId!;
 
-    const project = await projectService.updateProject(
-      id as string,
-      { title, description, repoLink },
-      userId
-    );
-    res.json(project);
+    try {
+      const project = await projectService.updateProject(
+        id as string,
+        { title, description, repoLink },
+        userId
+      );
+      res.json(project);
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 
   async delete(req: Request, res: Response) {
     const { id } = req.params;
     const userId = req.userId!;
 
-    await projectService.deleteProject(id as string, userId);
-    res.status(204).send();
+    try {
+      await projectService.deleteProject(id as string, userId);
+      res.status(204).send();
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 
   async addMember(req: Request, res: Response) {
@@ -57,16 +69,24 @@ export const projectController = {
     const { userId, role } = req.body;
     const currentUserId = req.userId!;
 
-    const member = await projectService.addMember(id as string, userId, role, currentUserId);
-    res.status(201).json(member);
+    try {
+      const member = await projectService.addMember(id as string, userId, role, currentUserId);
+      res.status(201).json(member);
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 
   async removeMember(req: Request, res: Response) {
     const { id, userId } = req.params;
     const currentUserId = req.userId!;
 
-    await projectService.removeMember(id as string, userId as string, currentUserId);
-    res.status(204).send();
+    try {
+      await projectService.removeMember(id as string, userId as string, currentUserId);
+      res.status(204).send();
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 
   async updateMemberRole(req: Request, res: Response) {
@@ -74,13 +94,17 @@ export const projectController = {
     const { role } = req.body;
     const currentUserId = req.userId!;
 
-    const member = await projectService.updateMemberRole(
-      id as string,
-      userId as string,
-      role,
-      currentUserId
-    );
-    res.json(member);
+    try {
+      const member = await projectService.updateMemberRole(
+        id as string,
+        userId as string,
+        role,
+        currentUserId
+      );
+      res.json(member);
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 
   async getMembers(req: Request, res: Response) {

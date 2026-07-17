@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { prisma } from '../config/database';
-import { hashPassword, comparePassword } from '../utils/bcrypt';
-import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
+import { prisma } from '../config/database.js';
+import { hashPassword, comparePassword } from '../utils/bcrypt.js';
+import { generateAccessToken, generateRefreshToken } from '../utils/jwt.js';
 
 export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -68,6 +68,7 @@ export const login = async (req: Request, res: Response) => {
   const accessToken = generateAccessToken(user.id);
   const refreshToken = generateRefreshToken(user.id);
 
+  await prisma.session.deleteMany({ where: { userId: user.id } });
   await prisma.session.create({
     data: {
       userId: user.id,
