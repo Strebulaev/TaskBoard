@@ -9,7 +9,7 @@
     "test:docker:watch": "TEST_API_URL=http://app:3000/api vitest"
   },
   "devDependencies": {
-    "@prisma/client": "^6.0.0",
+    "@prisma/client": "^6.19.3",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",

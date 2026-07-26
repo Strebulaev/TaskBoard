@@ -18,6 +18,15 @@ export const userController = {
     res.json(user);
   },
 
+  async search(req: Request, res: Response) {
+    const { q } = req.query;
+    if (!q || typeof q !== 'string' || q.trim().length < 2) {
+      return res.json([]);
+    }
+    const users = await userService.searchUsers(q.trim());
+    res.json(users);
+  },
+
   async update(req: Request, res: Response) {
     const id = req.params.id as string;
     const { name, description } = req.body;

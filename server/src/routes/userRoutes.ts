@@ -5,6 +5,7 @@ import { upload } from '../middlewares/upload.js';
 
 const router = Router();
 
+router.get('/search', userController.search);
 router.get('/:id', userController.getById);
 router.put('/:id', authenticate, userController.update);
 router.post('/:id/avatar', authenticate, upload.single('avatar'), userController.uploadAvatar);

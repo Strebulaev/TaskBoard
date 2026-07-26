@@ -3,7 +3,6 @@ services:
     build: .
     ports:
       - '3000:3000'
-      - '5173:5173'
     environment:
       - NODE_ENV=development
       - DATABASE_URL=mysql://root:root@mysql:3306/taskboard

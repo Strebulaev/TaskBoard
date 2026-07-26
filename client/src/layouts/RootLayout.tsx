@@ -14,7 +14,7 @@ import {
 import { Brightness4, Brightness7 } from '@mui/icons-material';
 import { useThemeStore } from '@store/themeStore';
 import { useUser } from '@hooks/useUser';
-import { logout } from '@api/auth';
+import { logout } from '@/api/logout';
 
 export function RootLayout() {
   const navigate = useNavigate();
