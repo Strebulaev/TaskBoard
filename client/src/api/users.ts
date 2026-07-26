@@ -2,8 +2,10 @@ import { apiClient } from './client';
 
 export const usersApi = {
   getById: (id: string) => apiClient.get(`/users/${id}`),
+  search: (query: string) => apiClient.get(`/users/search?q=${encodeURIComponent(query)}`),
   update: (id: string, data: { name?: string; description?: string }) =>
     apiClient.put(`/users/${id}`, data),
+
   uploadAvatar: (id: string, file: File) => {
     const formData = new FormData();
     formData.append('avatar', file);

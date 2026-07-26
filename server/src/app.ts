@@ -31,4 +31,9 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
+app.use((err: Error, req: any, res: any, next: any) => {
+  console.error(err);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
 export default app;

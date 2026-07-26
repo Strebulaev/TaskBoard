@@ -16,13 +16,20 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useProject, useUpdateProject } from '@hooks/queries/useProjects';
+import { useUser } from '@hooks/useUser';
+import { useRemoveProjectMember, useUpdateProjectMemberRole } from '@hooks/queries/useProjects';
 import { LoadingSpinner } from '@components/common/LoadingSpinner';
 import { StatusChip } from '@components/common/StatusChip';
 import { TaskForm } from '@components/TaskForm';
-import { useState } from 'react';
+import { AddMemberModal } from './components/AddMemberModal';
+import { useState, useCallback } from 'react';
 import type { Task } from '@/types/task';
 import type { Project } from '@/types/project';
 
@@ -33,16 +40,37 @@ export default function ProjectPage() {
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editRepoLink, setEditRepoLink] = useState('');
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
 
   const { data: projectData, isLoading, refetch } = useProject(id!);
+  const { user: currentUser } = useUser();
   const updateProject = useUpdateProject();
+  const removeMember = useRemoveProjectMember();
+  const updateMemberRole = useUpdateProjectMemberRole();
+
+  const currentUserMember = projectData?.members?.find((m) => m.userId === currentUser?.id);
+  const project = projectData as Project | undefined;
+  const isOwner = currentUserMember?.role === 'owner';
+  const owner = project?.members?.find((m) => m.role === 'owner');
+
+  const handleRemoveMember = useCallback(
+    async (userId: string) => {
+      await removeMember.mutateAsync({ projectId: id!, userId });
+      refetch();
+    },
+    [removeMember, id, refetch]
+  );
+
+  const handleRoleChange = useCallback(
+    async (userId: string, newRole: string) => {
+      await updateMemberRole.mutateAsync({ projectId: id!, userId, role: newRole });
+      refetch();
+    },
+    [updateMemberRole, id, refetch]
+  );
 
   if (isLoading) return <LoadingSpinner />;
-  if (!projectData) return <Typography>Project not found</Typography>;
-
-  const project = projectData as unknown as Project;
-
-  const owner = project.members?.find((m) => m.role === 'owner');
+  if (!project) return <Typography>Project not found</Typography>;
 
   const handleEditOpen = () => {
     setEditTitle(project.title);
@@ -69,9 +97,11 @@ export default function ProjectPage() {
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h4">{project.title}</Typography>
-          <IconButton onClick={handleEditOpen}>
-            <EditIcon />
-          </IconButton>
+          {isOwner && (
+            <IconButton onClick={handleEditOpen}>
+              <EditIcon />
+            </IconButton>
+          )}
         </Box>
         <Typography variant="body1" color="text.secondary">
           {project.description || 'No description'}
@@ -92,7 +122,19 @@ export default function ProjectPage() {
       </Box>
 
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6">Members</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h6">Members</Typography>
+          {isOwner && (
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<AddIcon />}
+              onClick={() => setAddMemberOpen(true)}
+            >
+              Add Member
+            </Button>
+          )}
+        </Box>
         <List>
           {project.members?.map((member) => (
             <ListItem key={member.userId}>
@@ -110,14 +152,38 @@ export default function ProjectPage() {
                 <Box>
                   <Typography variant="body1">{member.user.name}</Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {member.role}
+                    {member.user.email}
                   </Typography>
                 </Box>
-                <Chip
-                  label={member.role}
-                  size="small"
-                  color={member.role === 'owner' ? 'primary' : 'default'}
-                />
+                {isOwner && member.role !== 'owner' ? (
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    <FormControl size="small" sx={{ minWidth: 100 }}>
+                      <InputLabel>Role</InputLabel>
+                      <Select
+                        value={member.role}
+                        onChange={(e) => handleRoleChange(member.userId, e.target.value)}
+                        label="Role"
+                      >
+                        <MenuItem value="member">Member</MenuItem>
+                        <MenuItem value="admin">Admin</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => handleRemoveMember(member.userId)}
+                      disabled={removeMember.isPending}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                ) : (
+                  <Chip
+                    label={member.role}
+                    size="small"
+                    color={member.role === 'owner' ? 'primary' : 'default'}
+                  />
+                )}
               </Box>
             </ListItem>
           ))}
@@ -161,20 +227,9 @@ export default function ProjectPage() {
                       component="span"
                       label={`Due: ${new Date(task.deadline).toLocaleDateString()}`}
                       size="small"
-                      color={
-                        new Date(task.deadline) < new Date() && task.status !== 'done'
-                          ? 'error'
-                          : 'default'
-                      }
-                      sx={{ display: 'inline-flex' }}
+                      color={new Date(task.deadline) < new Date() ? 'error' : 'default'}
                     />
                   )}
-                  <Chip
-                    component="span"
-                    label={`Assignee: ${task.assignee?.name || 'Unassigned'}`}
-                    size="small"
-                    sx={{ display: 'inline-flex' }}
-                  />
                 </Box>
               </ListItem>
             ))}
@@ -189,6 +244,12 @@ export default function ProjectPage() {
           refetch();
         }}
         projectId={id}
+      />
+
+      <AddMemberModal
+        open={addMemberOpen}
+        onClose={() => setAddMemberOpen(false)}
+        projectId={id!}
       />
 
       <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)} maxWidth="sm" fullWidth>

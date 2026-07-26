@@ -1,0 +1,10 @@
+node_modules
+server/node_modules
+client/node_modules
+.git
+.env
+.env.example
+dist
+build
+.vscode
+package-lock.json

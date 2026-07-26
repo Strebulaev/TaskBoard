@@ -6,18 +6,22 @@ export const taskController = {
     const { title, description, status, deadline, projectId, assigneeId, reviewerId } = req.body;
     const userId = req.userId!;
 
-    const task = await taskService.createTask({
-      title,
-      description,
-      status,
-      deadline: deadline ? new Date(deadline) : undefined,
-      projectId,
-      createdBy: userId,
-      assigneeId,
-      reviewerId,
-    });
+    try {
+      const task = await taskService.createTask({
+        title,
+        description,
+        status,
+        deadline: deadline ? new Date(deadline) : undefined,
+        projectId,
+        createdBy: userId,
+        assigneeId,
+        reviewerId,
+      });
 
-    res.status(201).json(task);
+      res.status(201).json(task);
+    } catch (error) {
+      return res.status(400).json({ error: (error as Error).message });
+    }
   },
 
   async getById(req: Request, res: Response) {
@@ -49,27 +53,35 @@ export const taskController = {
     const { title, description, deadline, assigneeId, reviewerId } = req.body;
     const userId = req.userId!;
 
-    const task = await taskService.updateTask(
-      id as string,
-      {
-        title,
-        description,
-        deadline: deadline ? new Date(deadline) : undefined,
-        assigneeId,
-        reviewerId,
-      },
-      userId
-    );
+    try {
+      const task = await taskService.updateTask(
+        id as string,
+        {
+          title,
+          description,
+          deadline: deadline ? new Date(deadline) : undefined,
+          assigneeId,
+          reviewerId,
+        },
+        userId
+      );
 
-    res.json(task);
+      res.json(task);
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 
   async delete(req: Request, res: Response) {
     const { id } = req.params;
     const userId = req.userId!;
 
-    await taskService.deleteTask(id as string, userId);
-    res.status(204).send();
+    try {
+      await taskService.deleteTask(id as string, userId);
+      res.status(204).send();
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 
   async updateStatus(req: Request, res: Response) {
@@ -77,8 +89,12 @@ export const taskController = {
     const { status } = req.body;
     const userId = req.userId!;
 
-    const task = await taskService.updateStatus(id as string, status, userId);
-    res.json(task);
+    try {
+      const task = await taskService.updateStatus(id as string, status, userId);
+      res.json(task);
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 
   async assignAssignee(req: Request, res: Response) {
@@ -86,8 +102,12 @@ export const taskController = {
     const { assigneeId } = req.body;
     const userId = req.userId!;
 
-    const task = await taskService.assignAssignee(id as string, assigneeId || null, userId);
-    res.json(task);
+    try {
+      const task = await taskService.assignAssignee(id as string, assigneeId || null, userId);
+      res.json(task);
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 
   async assignReviewer(req: Request, res: Response) {
@@ -95,7 +115,11 @@ export const taskController = {
     const { reviewerId } = req.body;
     const userId = req.userId!;
 
-    const task = await taskService.assignReviewer(id as string, reviewerId || null, userId);
-    res.json(task);
+    try {
+      const task = await taskService.assignReviewer(id as string, reviewerId || null, userId);
+      res.json(task);
+    } catch (error) {
+      return res.status(401).json({ error: (error as Error).message });
+    }
   },
 };

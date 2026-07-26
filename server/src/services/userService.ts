@@ -31,4 +31,19 @@ export const userService = {
       },
     });
   },
+
+  async searchUsers(query: string) {
+    return prisma.user.findMany({
+      where: {
+        OR: [{ email: { contains: query } }, { name: { contains: query } }],
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatarUrl: true,
+      },
+      take: 20,
+    });
+  },
 };
